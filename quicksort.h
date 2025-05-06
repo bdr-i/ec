@@ -5,6 +5,7 @@
 
 // Fonctions de tri rapide
 Node* quicksort_recursive(Node* head);
-Node* quicksort_iterative(Node* head);
+void quicksort_iterative(Node** head);
+
 
 #endif

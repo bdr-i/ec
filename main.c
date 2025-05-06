@@ -7,7 +7,7 @@
 #include "quicksort.h"
 #include "mergesort.h"
 
-// Génère une liste chaînée aléatoire de taille n (valeurs 0-99)
+// Gï¿½nï¿½re une liste chaï¿½nï¿½e alï¿½atoire de taille n (valeurs 0-99)
 Node* generateRandomList(int n) {
     Node* head = NULL;
     for (int i = 0; i < n; ++i) {
@@ -17,7 +17,7 @@ Node* generateRandomList(int n) {
     return head;
 }
 
-// Libère la mémoire d'une liste chaînée
+// Libï¿½re la mï¿½moire d'une liste chaï¿½nï¿½e
 void freeList(Node* head) {
     Node* tmp;
     while (head) {
@@ -71,12 +71,12 @@ int main() {
             continue;
         }
 
-        // Génération et affichage de la liste
+        // Gï¿½nï¿½ration et affichage de la liste
         Node* head = generateRandomList(size);
         printf("\nListe avant tri : ");
         print_list(head);
 
-        // Temps d'exécution du tri
+        // Temps d'exï¿½cution du tri
         clock_t start = clock();
 
         switch (choice) {
@@ -87,7 +87,7 @@ int main() {
             selectionSortRecursive(head);
             break;
         case 3:
-            head = quicksort_iterative(head);
+            quicksort_iterative(&head);
             break;
         case 4:
             head = quicksort_recursive(head);
@@ -108,7 +108,7 @@ int main() {
         double duration = (double)(end - start) / CLOCKS_PER_SEC * 1000000;
 
 
-        // Affichage résultat
+        // Affichage rï¿½sultat
         printf("Liste apres tri : ");
         print_list(head);
         printf("Temps d'execution : %.3f millisecondes\n", duration);
@@ -118,6 +118,6 @@ int main() {
 
     } while (1);
 
-    printf("\nMerci d'avoir utilisé le programme. Au revoir !\n");
+    printf("\nMerci d'avoir utilisï¿½ le programme. Au revoir !\n");
     return 0;
 }

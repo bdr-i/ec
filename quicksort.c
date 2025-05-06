@@ -2,6 +2,39 @@
 #include "listechaine.h"
 #include "quicksort.h"
 
+void partition(Node* start, Node* end, Node** pivotRef) {
+    if (!start || start == end) {
+        *pivotRef = start;
+        return;
+    }
+
+    int pivotValue = end->val;
+    Node* p = start;
+    Node* prev = NULL;
+    Node* curr = start;
+
+    while (curr != end) {
+        if (curr->val < pivotValue) {
+            // Ã‰changer les valeurs de curr et p
+            int temp = curr->val;
+            curr->val = p->val;
+            p->val = temp;
+
+            prev = p;
+            p = p->next;
+        }
+        curr = curr->next;
+    }
+
+    // Ã‰changer la valeur de p (pivot final) avec end
+    int temp = p->val;
+    p->val = end->val;
+    end->val = temp;
+
+    *pivotRef = p;
+}
+
+
 // Fusionne deux listes
 Node* concat(Node* less, Node* equal, Node* greater) {
     Node* head = NULL, * tail = NULL;
@@ -20,7 +53,7 @@ Node* concat(Node* less, Node* equal, Node* greater) {
     return head;
 }
 
-// Tri rapide récursif
+// Tri rapide rï¿½cursif
 Node* quicksort_recursive(Node* head) {
     if (!head || !head->next) return head;
 
@@ -47,79 +80,47 @@ Node* quicksort_recursive(Node* head) {
     greater = quicksort_recursive(greater);
     return concat(less, equal, greater);
 }
+void quicksort_iterative(Node** headRef) {
+    if (!headRef || !*headRef || !(*headRef)->next) return;
 
+    typedef struct {
+        Node* start;
+        Node* end;
+    } StackItem;
 
-Node* quicksort_iterative(Node* head) {
-    if (!head || !head->next) return head;
+    StackItem stack[100];
+    int top = -1;
 
-    Node* unsorted = head;
-    Node* sorted = NULL;
+    Node* start = *headRef;
+    Node* end = *headRef;
+    while (end->next) end = end->next;
 
-    // Utilisé pour stocker temporairement des morceaux à trier
-    Node* pending = NULL;
+    stack[++top] = (StackItem){start, end};
 
-    // Ajouter la liste entière dans pending
-    unsorted->next = NULL;
-    pending = unsorted;
+    while (top >= 0) {
+        StackItem current = stack[top--];
+        start = current.start;
+        end = current.end;
 
-    while (pending) {
-        // Extraire une sous-liste de pending
-        Node* current = pending;
-        pending = pending->next;
-        current->next = NULL;
-
-        if (!current->next) {
-            // Ajouter l’élément seul à sorted
-            current->next = sorted;
-            sorted = current;
+        if (!start || start == end || start == end->next)
             continue;
+
+        Node* pivot = NULL;
+        partition(start, end, &pivot);
+
+        Node* temp = start;
+        Node* prev = NULL;
+        while (temp && temp != pivot) {
+            prev = temp;
+            temp = temp->next;
         }
 
-        // Pivot et partition
-        int pivot = current->val;
-        Node* less = NULL, * equal = NULL, * greater = NULL;
-
-        while (current) {
-            Node* next = current->next;
-            if (current->val < pivot) {
-                current->next = less;
-                less = current;
-            }
-            else if (current->val == pivot) {
-                current->next = equal;
-                equal = current;
-            }
-            else {
-                current->next = greater;
-                greater = current;
-            }
-            current = next;
+        if (prev && start != pivot) {
+            stack[++top] = (StackItem){start, prev};
         }
 
-        // Ajouter les parties à traiter plus tard (less et greater) à pending
-        if (greater) {
-            Node* tail = greater;
-            while (tail->next) tail = tail->next;
-            tail->next = pending;
-            pending = greater;
-        }
-
-        if (less) {
-            Node* tail = less;
-            while (tail->next) tail = tail->next;
-            tail->next = pending;
-            pending = less;
-        }
-
-        // Ajouter les éléments égaux (déjà triés) à sorted
-        if (equal) {
-            Node* tail = equal;
-            while (tail->next) tail = tail->next;
-            tail->next = sorted;
-            sorted = equal;
+        if (pivot && pivot->next && pivot->next != end->next) {
+            stack[++top] = (StackItem){pivot->next, end};
         }
     }
-
-    return sorted;
 }
-
